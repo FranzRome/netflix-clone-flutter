@@ -1,10 +1,10 @@
-import 'package:exam_project/data/response/tv_show_response.dart';
+import 'package:exam_project/api/tv_show_response.dart';
 
 class TvShowEntity {
   String? title;
   String? description;
   String? image;
-  double? rating;
+  dynamic rating;
 
   TvShowEntity(
        this.title,
@@ -19,7 +19,7 @@ extension TvShowMapper on TvShowResponse {
           String title = e.title ?? "";
           String description = e.description ?? "";
           String image = e.image ?? "";
-          double rating = e.rating ?? 0;
+          dynamic rating = e.rating ?? 0;
 
           return TvShowEntity(title, description, image, rating);
         }).toList() ?? List.empty();
