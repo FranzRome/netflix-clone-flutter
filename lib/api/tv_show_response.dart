@@ -4,13 +4,13 @@ class TvShowResponse {
   TvShowResponse({this.results});
 
   TvShowResponse.fromJson(List<dynamic> json) {
-    int index = 0;
+    // int index = 0;
     if (json.isNotEmpty) {
       results = <Results>[];
       for (var v in json) {
         results!.add(Results.fromJson(v));
-        print(index);
-        index++;
+        // print(index);
+        // index++;
       }
     }
   }
