@@ -1,4 +1,5 @@
 import 'package:exam_project/entities/tv_show_entity.dart';
+import 'package:exam_project/views/detail_page.dart';
 import 'package:exam_project/views/tv_show/tv_show_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +9,10 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final TvShowBloc _tvShowBloc = TvShowBloc();
 
   @override
@@ -19,18 +20,6 @@ class _HomePageState extends State<HomePage> {
     _tvShowBloc.getTvShows();
     super.initState();
   }
-
-  /*
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: CustomScrollView(
-
-      ),
-    );
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +39,18 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                       child: ListTile(
-                      leading: Image.network(data[index].image!),
-                  title: Text(data[index].title!),
-                  subtitle: Text("Rating: ${data[index].rating!}"),
-                  trailing: const Icon(Icons.more_vert),
+                    leading: Image.network(data[index].image!),
+                    title: Text(data[index].title!),
+                    subtitle: Text("Rating: ${data[index].rating!}"),
+                    trailing: const Icon(Icons.more_vert),
+                        onTap: () => {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DetailPage(id: data[index].id)))
+                      },
                   ));
-                  }
-            );
+                });
           },
-        )
-    );
+        ));
   }
 }

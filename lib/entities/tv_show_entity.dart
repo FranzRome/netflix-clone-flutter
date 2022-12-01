@@ -1,27 +1,17 @@
 import 'package:exam_project/api/tv_show_response.dart';
 
 class TvShowEntity {
-  String? title;
-  String? description;
-  String? image;
-  dynamic rating;
+  String id;
+  String title;
+  String description;
+  String image;
+  num? rating;
 
-  TvShowEntity(
-       this.title,
-       this.description,
-       this.image,
-       this.rating);
+  TvShowEntity(this.id, this.title, this.description, this.image, this.rating);
 }
 
-extension TvShowMapper on TvShowResponse {
-  List<TvShowEntity> toEntity() {
-    return results?.map((e) {
-          String title = e.title ?? "";
-          String description = e.description ?? "";
-          String image = e.image ?? "";
-          dynamic rating = e.rating ?? 0;
-
-          return TvShowEntity(title, description, image, rating);
-        }).toList() ?? List.empty();
+extension TvShowMapper on TvShowRemote {
+  TvShowEntity toEntity() {
+    return TvShowEntity(id, title, description, image, rating);
   }
 }

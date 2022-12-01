@@ -1,50 +1,41 @@
-class TvShowResponse {
-  List<Results>? results;
+/*
+class TvShowsListResponse {
+  List<TvShowRemote>? results;
 
-  TvShowResponse({this.results});
+  TvShowsListResponse({this.results});
 
-  TvShowResponse.fromJson(List<dynamic> json) {
-    int index = 0;
+  TvShowsListResponse.fromJson(List<dynamic> json) {
     if (json.isNotEmpty) {
-      results = <Results>[];
+      results = <TvShowRemote>[];
       for (var v in json) {
-        results!.add(Results.fromJson(v));
-        print(index);
-        index++;
+        results!.add(TvShowRemote.fromJson(v));
       }
     }
   }
-
-  List<dynamic> toJson() {
-    List<dynamic> data = [];
-    if (results != null) {
-      data = results!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
 }
+*/
 
-class Results {
-  String? title;
-  String? description;
-  String? image;
-  dynamic rating;
+class TvShowRemote {
+  String id = '';
+  String title = '';
+  String description = '';
+  String image = '';
+  num? rating;
 
-  Results({this.title, this.description, this.image, this.rating});
+  TvShowRemote(
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.image,
+      required this.rating});
 
-  Results.fromJson(Map<String, dynamic> json) {
+  TvShowRemote.fromJson(Map<String, dynamic> json) {
+    id = json['id'].toString();
     title = json['name'];
     description = json['summary'];
     image = json['image']['original'];
-    rating = json['rating']['average']; // It works
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['name'] = title;
-    data['summary'] = description;
-    data['image']['original'] = image;
-    data['rating']['average'] = rating;
-    return data;
+    rating = json['rating']['average'];
   }
 }
+
+
