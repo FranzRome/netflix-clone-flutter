@@ -6,13 +6,13 @@ import 'package:http/http.dart' as http;
 
 class TvShowBloc {
 
-  List<TvShowEntity> showsList = List.empty();
+  List<TvShowEntity> _showsList = List.empty();
 
-  getTvShows() async {
-    if(showsList.isEmpty) {
-      showsList = await _fetchTvShowsList();
-      print(showsList.length);
+  Future<List<TvShowEntity>> getTvShows() async {
+    if(_showsList.isEmpty) {
+      _showsList = await _fetchTvShowsList();
     }
+    return _showsList;
   }
 
   Future<List<TvShowEntity>> _fetchTvShowsList() async {
@@ -22,8 +22,10 @@ class TvShowBloc {
     try {
       if (response.statusCode == 200) {
         var responseList = convert.jsonDecode(response.body) as List<dynamic>;
-        var tvShowResponse = TvShowResponse.fromJson(responseList);
-        return tvShowResponse.toEntity();
+
+        var remoteList = responseList.map((e) => TvShowRemote.fromJson(e));
+
+        return remoteList.map((e) => e.toEntity()).toList();
       } else {
         // If the server did not return a 200 OK response,
         // then throw an exception.
@@ -36,4 +38,18 @@ class TvShowBloc {
 
     return List.empty();
   }
-}
+
+  Future<TvShowEntity> fetchTvShowById(String id) async {
+    var url = Uri.parse('https://api.tvmaze.com/shows/$id');
+    var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var json = convert.jsonDecode(response.body);
+        var remote = TvShowRemote.fromJson(json);
+        return remote.toEntity();
+      } else {
+        // If the server did not return a 200 OK response,
+        // then throw an exception.
+        throw Exception('Failed to load shows');
+      }
+    }
+  }
