@@ -6,13 +6,14 @@ import 'package:http/http.dart' as http;
 
 class TvShowBloc {
 
-  List<TvShowEntity> showsList = List.empty();
+  List<TvShowEntity> _showsList = List.empty();
 
-  getTvShows() async {
-    if(showsList.isEmpty) {
-      showsList = await _fetchTvShowsList();
-      print(showsList.length);
+  Future<List<TvShowEntity>> getTvShows() async {
+    if(_showsList.isEmpty) {
+      _showsList = await _fetchTvShowsList();
+      print(_showsList.length);
     }
+    return _showsList;
   }
 
   Future<List<TvShowEntity>> _fetchTvShowsList() async {
