@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:exam_project/api/tv_show_response.dart';
+import 'package:exam_project/api/tv_show_remote.dart';
 import 'package:exam_project/entities/tv_show_entity.dart';
 import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
