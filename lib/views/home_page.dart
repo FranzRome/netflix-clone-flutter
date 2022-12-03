@@ -22,6 +22,8 @@ class HomePageState extends State<HomePage> {
     super.initState();
   }
 
+  //TODO Add animation in transition between pages
+  //TODO Add favorite button to list tile
   @override
   Widget build(BuildContext context) {
     return Scaffold(
