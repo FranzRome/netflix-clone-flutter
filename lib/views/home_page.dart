@@ -4,6 +4,10 @@ import 'package:exam_project/views/tv_show/tv_show_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
+import 'package:exam_project/globals.dart' as globals;
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 class HomePage extends StatefulWidget {
   static const route = "/home_page";
 
@@ -22,12 +26,13 @@ class HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  //TODO Add animation in transition between pages
   //TODO Add favorite button to list tile
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Home'),),
+        appBar: AppBar(
+          title: const Text('Home'),
+        ),
         body: FutureBuilder<List<TvShowEntity>>(
           future: _tvShowBloc.getTvShows(),
           builder: (BuildContext context,
@@ -48,21 +53,88 @@ class HomePageState extends State<HomePage> {
                     subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      element.rating != null
-                          ? Text("Rating: ${element.rating!}")
-                          : Text("Not rated\n${element.description}"),
-                      Html(data: element.description.replaceAll('\n', '').replaceRange(62, element.description.length, '...'))
-                    ]),
-                    trailing: const Icon(Icons.more_vert),
+                          element.rating != null
+                              ? Text("Rating: ${element.rating!}")
+                              : const Text('Not rated'),
+                          Html(
+                              data: element.description
+                                  .replaceRange(
+                                      62, element.description.length, '...')
+                                  .replaceAll('\n', ''))
+                        ]),
+                    trailing: ValueListenableBuilder<Box>(
+                        valueListenable: Hive.box('favorites').listenable(),
+                        builder: (context, box, widget) {
+                          return (element.favorite == true
+                              ? IconButton(
+                                  icon: const Icon(Icons.star),
+                                  onPressed: () {
+                                    globals.setFavorite(element.id, false);
+                                    element.favorite = false;
+                                    final snackBar = SnackBar(
+                                        content: Text(
+                                            '${element.title} removed from favorites'),
+                                        action: SnackBarAction(
+                                            label: 'Undo',
+                                            onPressed: () {
+                                              globals.setFavorite(
+                                                  element.id, true);
+                                              element.favorite = true;
+                                            }));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  },
+                                )
+                              : IconButton(
+                                  icon: const Icon(Icons.star_border),
+                                  onPressed: () {
+                                    globals.setFavorite(element.id, true);
+                                    element.favorite = true;
+                                    final snackBar = SnackBar(
+                                      content: Text(
+                                          '${element.title} added to favorites'),
+                                      action: SnackBarAction(
+                                          label: 'Undo',
+                                          onPressed: () {
+                                            globals.setFavorite(
+                                                element.id, false);
+                                            element.favorite = false;
+                                          }),
+                                    );
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }));
+                        }),
                     onTap: () => {
-                      Navigator.push(
+                      Navigator.of(context).push(_goToDetail(element.id))
+                      /*Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DetailPage(id: element.id)))
+                              builder: (context) => DetailPage(id: element.id)))*/
                     },
                   ));
                 });
           },
         ));
+  }
+
+  Route _goToDetail(String id) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          DetailPage(id: id),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = 0.0;
+        const end = 1.0;
+        const curve = Curves.ease;
+
+        var tween = Tween<double>(begin: begin, end: end)
+            .chain(CurveTween(curve: curve));
+
+        return ScaleTransition(
+          scale: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
   }
 }
