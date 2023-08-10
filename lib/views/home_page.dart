@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 import 'package:exam_project/globals.dart' as globals;
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,11 +21,9 @@ class HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _tvShowBloc.getTvShows();
     super.initState();
   }
 
-  //TODO Add favorite button to list tile
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,51 +45,53 @@ class HomePageState extends State<HomePage> {
                   TvShowEntity element = data[index];
                   return Card(
                       child: ListTile(
-                    leading: Image.network(element.image),
-                    title: Text(element.title),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          element.rating != null
-                              ? Text("Rating: ${element.rating!}")
-                              : const Text('Not rated'),
-                          Html(
-                              data: element.description
-                                  .replaceRange(
+                        leading: Image.network(element.image),
+                        title: Text(element.title),
+                        subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              element.rating != null
+                                  ? Text("Rating: ${element.rating!}")
+                                  : const Text('Not rated'),
+                              Html(
+                                  data: element.description
+                                      .replaceRange(
                                       62, element.description.length, '...')
-                                  .replaceAll('\n', ''))
-                        ]),
-                    trailing: ValueListenableBuilder<Box>(
-                        valueListenable: Hive.box('favorites').listenable(),
-                        builder: (context, box, widget) {
-                          return (element.favorite == true
-                              ? IconButton(
-                                  icon: const Icon(Icons.star),
-                                  onPressed: () {
-                                    globals.setFavorite(element.id, false);
-                                    element.favorite = false;
-                                    final snackBar = SnackBar(
-                                        content: Text(
-                                            '${element.title} removed from favorites'),
-                                        action: SnackBarAction(
-                                            label: 'Undo',
-                                            onPressed: () {
-                                              globals.setFavorite(
-                                                  element.id, true);
-                                              element.favorite = true;
-                                            }));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                  },
-                                )
-                              : IconButton(
+                                      .replaceAll('\n', ''))
+                            ]),
+                        trailing: ValueListenableBuilder<Box>(
+                            valueListenable: Hive.box('favorites').listenable(),
+                            builder: (context, box, widget) {
+                              return (element.favorite == true
+                                  ? IconButton(
+                                icon: const Icon(Icons.star),
+                                onPressed: () {
+                                  globals.setFavorite(element.id, false);
+                                  element.favorite = false;
+                                  final snackBar = SnackBar(
+                                      content: Text(
+                                          '${element
+                                              .title} removed from favorites'),
+                                      action: SnackBarAction(
+                                          label: 'Undo',
+                                          onPressed: () {
+                                            globals.setFavorite(
+                                                element.id, true);
+                                            element.favorite = true;
+                                          }));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                },
+                              )
+                                  : IconButton(
                                   icon: const Icon(Icons.star_border),
                                   onPressed: () {
                                     globals.setFavorite(element.id, true);
                                     element.favorite = true;
                                     final snackBar = SnackBar(
                                       content: Text(
-                                          '${element.title} added to favorites'),
+                                          '${element
+                                              .title} added to favorites'),
                                       action: SnackBarAction(
                                           label: 'Undo',
                                           onPressed: () {
@@ -104,15 +103,16 @@ class HomePageState extends State<HomePage> {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                   }));
-                        }),
-                    onTap: () => {
-                      Navigator.of(context).push(_goToDetail(element.id))
-                      /*Navigator.push(
+                            }),
+                        onTap: () =>
+                        {
+                          Navigator.of(context).push(_goToDetail(element.id))
+                          /*Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => DetailPage(id: element.id)))*/
-                    },
-                  ));
+                        },
+                      ));
                 });
           },
         ));
